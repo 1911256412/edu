@@ -13,7 +13,7 @@ public class testGetVideoPlayAuth {
     /*获取播放凭证函数*/
     public static GetVideoPlayAuthResponse getVideoPlayAuth(DefaultAcsClient client) throws Exception {
         GetVideoPlayAuthRequest request = new GetVideoPlayAuthRequest();
-        request.setVideoId("71eb56477c0e42f9b4da475ec0897b1f");
+        request.setVideoId("79ca377692df4942abaf4cf4666ea18f");
         return client.getAcsResponse(request);
     }
 

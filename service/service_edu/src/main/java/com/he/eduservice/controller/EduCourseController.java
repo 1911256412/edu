@@ -6,6 +6,7 @@ import com.he.eduservice.entity.EduCourse;
 import com.he.eduservice.entity.vo.CoursePublicVo;
 import com.he.eduservice.entity.vo.EduCourseVo;
 import com.he.eduservice.service.EduCourseService;
+import com.he.entity.CourseInfo;
 import com.he.utils.R;
 import org.springframework.web.bind.annotation.*;
 
@@ -78,10 +79,16 @@ public class EduCourseController {
     }
     //删除课程
     @DeleteMapping("deleteCourse/{courseId}")
-    public R deleteCourse(@PathVariable  String courseId){
-
+    public R deleteCourse(@PathVariable("courseId")  String courseId){
         eduCourseService.deleteCourse(courseId);
         return R.ok();
+    }
+    //通过课程id进行查询
+    @GetMapping("getByCourseId/{courseId}")
+    public CourseInfo selectBycourse(@PathVariable String courseId) {
+
+        CourseInfo CourseInfo = eduCourseService.getCourseById(courseId);
+        return CourseInfo;
     }
 }
 

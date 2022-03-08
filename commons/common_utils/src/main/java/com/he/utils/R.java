@@ -19,7 +19,6 @@ public class R {
         r.setSuccess(true);
         r.setCode(ResultCode.SUCCESS);
         r.setMessage("成功");
-
         return r;
     }
     //失败
@@ -40,7 +39,6 @@ public class R {
         return this;
     }
     public R data(Map<String, Object> map) {
-
         this.setData(map);
         return this;
     }

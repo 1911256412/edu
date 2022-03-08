@@ -1,23 +1,30 @@
 package com.he.eduservice.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.he.eduservice.entity.EduChapter;
 import com.he.eduservice.entity.EduCourse;
 import com.he.eduservice.entity.EduCourseDescription;
+import com.he.eduservice.entity.EduTeacher;
 import com.he.eduservice.entity.vo.CoursePublicVo;
+import com.he.eduservice.entity.vo.CourseWebVo;
 import com.he.eduservice.entity.vo.EduCourseVo;
+import com.he.eduservice.entity.vo.FrontCourseVo;
 import com.he.eduservice.mapper.EduCourseDescriptionMapper;
 import com.he.eduservice.mapper.EduCourseMapper;
-import com.he.eduservice.service.EduChapterService;
-import com.he.eduservice.service.EduCourseDescriptionService;
-import com.he.eduservice.service.EduCourseService;
+import com.he.eduservice.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.he.eduservice.service.EduVideoService;
+import com.he.entity.CourseInfo;
 import com.he.exception.HeException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -34,9 +41,12 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
     private EduCourseDescriptionService eduCourseDescriptionService;
 
     @Resource
+    private EduTeacherService eduTeacherService;
+    @Resource
     private EduVideoService eduVideoService;
     @Resource
     private EduChapterService eduChapterService;
+
     //实现添加课程
     public String addCourse(EduCourseVo eduCourseVo) {
 
@@ -104,8 +114,63 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
         eduCourseDescriptionService.removeById(courseId);
         //根据课程id删除课程
         int i = baseMapper.deleteById(courseId);
-        if(i==0){
-            throw new HeException(20001,"删除课程失败");
+        if (i == 0) {
+            throw new HeException(20001, "删除课程失败");
         }
+    }
+
+
+    public Map<String, Object> selectFrontCourse(Page<EduCourse> page, FrontCourseVo frontCourseVo) {
+        QueryWrapper<EduCourse> wrapper = new QueryWrapper<>();
+        if (!StringUtils.isEmpty(frontCourseVo.getSubjectId())) {
+            wrapper.eq("subject_id", frontCourseVo.getSubjectId());
+        }
+        if (!StringUtils.isEmpty(frontCourseVo.getSubjectParentId())) {
+            wrapper.eq("subject_parent_id", frontCourseVo.getSubjectParentId());
+        }
+        if (!StringUtils.isEmpty(frontCourseVo.getBuyCountSort())) {
+            wrapper.orderByDesc("buy_count");
+        }
+        if (!StringUtils.isEmpty(frontCourseVo.getGmtCreateSort())) {
+            wrapper.orderByDesc("gmt_create");
+        }
+        if (!StringUtils.isEmpty(frontCourseVo.getPriceSort())) {
+            wrapper.orderByDesc("price");
+        }
+        baseMapper.selectPage(page, wrapper);
+        List<EduCourse> records = page.getRecords();
+        long total = page.getTotal();
+        boolean hasPrevious = page.hasPrevious();
+        boolean hasNext = page.hasNext();
+        long current = page.getCurrent();
+        long size = page.getSize();
+        long pages = page.getPages();
+        Map<String, Object> map = new HashMap<>();
+        map.put("items", records);
+        map.put("total", total);
+        map.put("hasNewt", hasNext);
+        map.put("hasPrevious", hasPrevious);
+        map.put("current", current);
+        map.put("size", size);
+        map.put("pages", pages);
+        return map;
+    }
+
+    @Override
+    public CourseWebVo selectFrontWebCourse(String courseId) {
+        CourseWebVo courseWebVo=baseMapper.selectWebCourseInfo(courseId);
+        return courseWebVo;
+    }
+
+    @Override
+    public CourseInfo getCourseById(String courseId) {
+        EduCourse eduCourse = baseMapper.selectById(courseId);
+
+        CourseInfo info=new CourseInfo();
+        BeanUtils.copyProperties(eduCourse,info);
+        //通过教师id得到教师name
+        EduTeacher eduTeacher = eduTeacherService.getById(eduCourse.getTeacherId());
+        info.setTeacherName(eduTeacher.getName());
+        return info;
     }
 }

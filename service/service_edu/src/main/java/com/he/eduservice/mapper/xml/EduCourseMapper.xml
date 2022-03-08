@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.he.eduservice.mapper.EduCourseMapper">
-<resultMap id="CoursePublic" type="com.he.eduservice.entity.vo.CoursePublicVo">
-    <id column="id" property="id"></id>
-    <result column="title" property="title"></result>
-    <result column="cover" property="cover"></result>
-    <result column="price" property="price"></result>
-    <result column="lesson_num" property="lessonNum"></result>
-    <result column="OneSubject" property="OneSubject"></result>
-    <result column="TwoSubject" property="TwoSubject"></result>
-    <result column="name" property="teacherName"></result>
-</resultMap>
+    <resultMap id="CoursePublic" type="com.he.eduservice.entity.vo.CoursePublicVo">
+        <id column="id" property="id"></id>
+        <result column="title" property="title"></result>
+        <result column="cover" property="cover"></result>
+        <result column="price" property="price"></result>
+        <result column="lesson_num" property="lessonNum"></result>
+        <result column="OneSubject" property="OneSubject"></result>
+        <result column="TwoSubject" property="TwoSubject"></result>
+        <result column="name" property="teacherName"></result>
+    </resultMap>
     <select id="selectPublicVo" resultMap="CoursePublic">
 select ec.id,ec.title , ec.cover,ec.price, ec.lesson_num,
 et.name,es1.title as OneSubject,es2.title as TwoSubject
@@ -19,5 +19,17 @@ from edu_course  ec         left  join   edu_course_description  ecd  on  ec.id=
 							left  join   edu_subject   es1    on  es1.id=ec.subject_parent_id
 							left  join   edu_subject   es2   on  es2.id=ec.subject_id
 						    where ec.id=#{courseId}
+    </select>
+    <select id="selectWebCourseInfo"  resultType="com.he.eduservice.entity.vo.CourseWebVo">
+select ec.id, ec.title , ec.cover,ec.price, ec.lesson_num as lessonNum, ecd.description,
+et.name as teacherName,  et.avatar ,  ec.buy_count as buyCount, ec.view_count as viewCount,
+et.id as teacherId,  es1.title as subjectLevelOne,es2.title as subjectLevelTwo ,et.intro
+,es1.parent_id as subjectLevelOneId, es2.id as subjectLevelTwoId
+from edu_course  ec        left  join   edu_course_description  ecd  on  ec.id=ecd.id
+                            left  join   edu_teacher   et             on  ec.teacher_id=et.id
+							left  join   edu_subject   es1            on  es1.id=ec.subject_parent_id
+							left  join   edu_subject   es2            on  es2.id=ec.subject_id
+							where ec.id=#{courseId}
+
     </select>
 </mapper>

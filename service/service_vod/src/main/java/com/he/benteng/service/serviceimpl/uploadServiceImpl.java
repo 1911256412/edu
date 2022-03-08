@@ -10,11 +10,14 @@ import com.aliyuncs.vod.model.v20170321.DeleteVideoResponse;
 import com.he.benteng.service.uploadService;
 import com.he.benteng.utils.aliyunSdkUtil;
 import com.he.benteng.utils.constPropertiesUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class uploadServiceImpl implements uploadService {
@@ -58,6 +61,24 @@ public class uploadServiceImpl implements uploadService {
         request.setVideoIds(videoId);
         client.getAcsResponse(request);
         response = client.getAcsResponse(request);
+        } catch (Exception e) {
+            System.out.print("ErrorMessage = " + e.getLocalizedMessage());
+        }
+    }
+
+    @Override
+    public void deleteBatch(List videoList) {
+        try{
+            DeleteVideoRequest request = new DeleteVideoRequest();
+            //支持传入多个视频ID，多个用逗号分隔
+            /*请求示例*/
+            DefaultAcsClient client = aliyunSdkUtil.initVodClient(constPropertiesUtils.ACCESS_KEY_ID, constPropertiesUtils.ACCESS_KEY_SECERT);
+            DeleteVideoResponse response = new DeleteVideoResponse();
+            String videoId= StringUtils.join(videoList,",");
+
+            request.setVideoIds(videoId);
+            client.getAcsResponse(request);
+            response = client.getAcsResponse(request);
         } catch (Exception e) {
             System.out.print("ErrorMessage = " + e.getLocalizedMessage());
         }

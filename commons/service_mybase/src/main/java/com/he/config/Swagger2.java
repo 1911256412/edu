@@ -22,7 +22,7 @@ public class Swagger2 {
                     .groupName("webApi")
                     .apiInfo(webApiInfo())
                     .select()
-                    .paths(Predicates.not(PathSelectors.regex("/admin/.*")))
+                    //.paths(Predicates.not(PathSelectors.regex("/admin/.*")))
                     .paths(Predicates.not(PathSelectors.regex("/error.*")))
                     .build();
         }
